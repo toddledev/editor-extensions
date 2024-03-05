@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/chrome"
+  },
+  "extends": "./tsconfig.json",
+  "include": ["shared", "chrome"]
+}

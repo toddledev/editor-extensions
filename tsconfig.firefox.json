@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/firefox"
+  },
+  "extends": "./tsconfig.json",
+  "include": ["shared", "firefox"]
+}

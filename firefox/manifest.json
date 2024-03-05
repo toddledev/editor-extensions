@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "toddle",
+  "version": "1.0",
+  "description": "Browser extension for the toddle editor.",
+  "background": {
+    "scripts": ["firefox/src/background.js"]
+  },
+  "icons": {
+    "32": "icons/icon-32x32.png",
+    "64": "icons/icon-64x64.png",
+    "128": "icons/icon-128x128.png"
+  },
+  "homepage_url": "https://toddle.dev",
+  "permissions": ["cookies", "webRequest", "webRequestBlocking"],
+  "host_permissions": ["https://*.toddle.dev/*", "https://*.toddle.site/*"]
+}

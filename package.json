@@ -1,0 +1,22 @@
+{
+  "name": "extensions",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "chrome-types": "0.1.270",
+    "@types/firefox-webext-browser": "120.0.1"
+  },
+  "peerDependencies": {
+    "prettier": "3.2.5",
+    "typescript": "5.3.3"
+  },
+  "scripts": {
+    "tsc": "tsc --project tsconfig.json --noEmit",
+    "tsc:watch": "tsc --project tsconfig.json --watch --noEmit",
+    "prebuild:chrome": "rm -rf dist/chrome && tsc --project tsconfig.chrome.json",
+    "build:chrome": "cp chrome/manifest.json dist/chrome/ && cp -a chrome/icons dist/chrome && cd dist/ && zip -FSr chrome/chrome.zip chrome/",
+    "prebuild:firefox": "rm -rf dist/firefox && tsc --project tsconfig.firefox.json",
+    "build:firefox": "cp firefox/manifest.json dist/firefox/ && cp -a firefox/icons dist/firefox && cd dist/ && zip -FSr firefox/firefox.zip firefox/",
+    "prettier": "prettier --check '*.json' '**/*.ts'"
+  }
+}
