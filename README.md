@@ -5,7 +5,7 @@ The [toddle](https://toddle.dev?utm_source=github) editor previews a project in 
 This repository holds code for the 2 browser extensions - 1 for Chrome and 1 for Firefox.
 
 ## Features
-
+Hej
 The extension(s) are responsible for 2 things:
 
 1. Copying cookies from the editor --> the iframe. This is useful when working with authenticated APIs where you're already logged in for instance.
