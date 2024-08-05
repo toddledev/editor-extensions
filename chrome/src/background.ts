@@ -12,6 +12,9 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       removeRuleIds: [RULE_ID],
     });
 
+    if(event.parentFrameId < 0){
+      return;
+    }
     // check the parent frame so we only override cookies if we are on toddle.dev
     const parentFrame = await chrome.webNavigation.getFrame({
       documentId: event.parentDocumentId,
@@ -33,28 +36,30 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       domain: url.host,
     });
 
-    const cookieValue =
-      domainCookies.map((c) => `${c.name}=${c.value}`).join("; ") + ";";
+    if (domainCookies.length > 0) {
+      const cookieValue =
+        domainCookies.map((c) => `${c.name}=${c.value}`).join("; ") + ";";
 
-    await chrome.declarativeNetRequest.updateSessionRules({
-      removeRuleIds: [RULE_ID],
-      addRules: [
-        {
-          id: RULE_ID,
-          condition: {},
-          action: {
-            type: "modifyHeaders",
-            requestHeaders: [
-              {
-                header: "Cookie",
-                operation: "set",
-                value: cookieValue,
-              },
-            ],
+      await chrome.declarativeNetRequest.updateSessionRules({
+        removeRuleIds: [RULE_ID],
+        addRules: [
+          {
+            id: RULE_ID,
+            condition: {},
+            action: {
+              type: "modifyHeaders",
+              requestHeaders: [
+                {
+                  header: "Cookie",
+                  operation: "set",
+                  value: cookieValue,
+                },
+              ],
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
+    }
   },
   {
     url: [{ hostContains: ".toddle.site" }],

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "toddle",
   "description": "Browser extension for the toddle editor.",
-  "version": "1.0",
+  "version": "2.0",
   "icons": {
     "32": "icons/toddle_32x32.png",
     "64": "icons/toddle_64x64.png",
@@ -13,6 +13,18 @@
     "type": "module"
   },
   "homepage_url": "https://toddle.dev",
-  "permissions": ["cookies", "webNavigation", "declarativeNetRequest", "webRequest"],
-  "host_permissions": ["https://*.toddle.site/*"]
+  "permissions": [
+    "cookies",
+    "webNavigation",
+    "declarativeNetRequest",
+    "webRequest"
+  ],
+  "host_permissions": ["https://*.toddle.site/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://*.toddle.dev/*", "https://*.toddle.site/*"],
+      "js": ["chrome/src/install_notifier.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }

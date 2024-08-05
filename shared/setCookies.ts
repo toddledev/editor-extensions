@@ -39,7 +39,9 @@ export function setCookies({
       expirationDate,
       domain,
     }) => {
-      let url: string = requestUrl;
+      const requestedUrl =  new URL(requestUrl);
+      let url = requestedUrl.origin;
+
       try {
         if (typeof domain === "string") {
           const domainUrl = domain.startsWith("https://")
