@@ -15,13 +15,13 @@ export function setCookies({
     responseHeaders
       .filter(
         (
-          h,
+          h
         ): h is RequireFields<
           chrome.webRequest.HttpHeaders[0] | browser.webRequest.HttpHeaders[0],
           "value"
-        > => typeof h.value === "string",
+        > => typeof h.value === "string"
       )
-      .map((h) => [h.name, h.value] as [string, string]),
+      .map((h) => [h.name, h.value] as [string, string])
   );
   // We might have multiple Set-Cookie headers
   const cookies = headers
@@ -39,7 +39,7 @@ export function setCookies({
       expirationDate,
       domain,
     }) => {
-      const requestedUrl =  new URL(requestUrl);
+      const requestedUrl = new URL(requestUrl);
       let url = requestedUrl.origin;
 
       try {
@@ -64,7 +64,7 @@ export function setCookies({
         expirationDate,
         domain,
       });
-    },
+    }
   );
 }
 

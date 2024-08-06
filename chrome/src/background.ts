@@ -12,7 +12,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       removeRuleIds: [RULE_ID],
     });
 
-    if(event.parentFrameId < 0){
+    if (event.parentFrameId < 0) {
       return;
     }
     // check the parent frame so we only override cookies if we are on toddle.dev
@@ -63,7 +63,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(
   },
   {
     url: [{ hostContains: ".toddle.site" }],
-  },
+  }
 );
 
 chrome.webRequest.onHeadersReceived.addListener(
@@ -84,5 +84,5 @@ chrome.webRequest.onHeadersReceived.addListener(
     types: ["xmlhttprequest"],
   },
   // extraHeaders is necessary to read set-cookie headers
-  ["responseHeaders", "extraHeaders"],
+  ["responseHeaders", "extraHeaders"]
 );
