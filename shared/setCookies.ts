@@ -1,9 +1,9 @@
 export interface SetCookiesArguments {
-  requestUrl: string;
+  requestUrl: string
   responseHeaders:
     | Array<chrome.webRequest.HttpHeaders[0]> // type hack
-    | browser.webRequest.HttpHeaders;
-  setCookie: (cookie: ParsedCookie & { url: string }) => void;
+    | browser.webRequest.HttpHeaders
+  setCookie: (cookie: ParsedCookie & { url: string }) => void
 }
 
 export function setCookies({
@@ -18,16 +18,16 @@ export function setCookies({
           h,
         ): h is RequireFields<
           chrome.webRequest.HttpHeaders[0] | browser.webRequest.HttpHeaders[0],
-          "value"
-        > => typeof h.value === "string",
+          'value'
+        > => typeof h.value === 'string',
       )
       .map((h) => [h.name, h.value] as [string, string]),
-  );
+  )
   // We might have multiple Set-Cookie headers
   const cookies = headers
     .getSetCookie()
     .map((c) => parseCookie(c))
-    .filter((c): c is ParsedCookie => !!c);
+    .filter((c): c is ParsedCookie => !!c)
   cookies.forEach(
     ({
       name,
@@ -39,14 +39,16 @@ export function setCookies({
       expirationDate,
       domain,
     }) => {
-      let url: string = requestUrl;
+      const requestedUrl = new URL(requestUrl)
+      let url = requestedUrl.origin
+
       try {
-        if (typeof domain === "string") {
-          const domainUrl = domain.startsWith("https://")
+        if (typeof domain === 'string') {
+          const domainUrl = domain.startsWith('https://')
             ? domain
-            : "https://" + domain;
-          const parsedUrl = new URL(domainUrl);
-          url = parsedUrl.origin;
+            : 'https://' + domain
+          const parsedUrl = new URL(domainUrl)
+          url = parsedUrl.origin
         }
         // eslint-disable-next-line no-empty
       } catch {}
@@ -61,9 +63,9 @@ export function setCookies({
         sameSite,
         expirationDate,
         domain,
-      });
+      })
     },
-  );
+  )
 }
 
 /**
@@ -74,89 +76,89 @@ export function setCookies({
  */
 const parseCookie = (cookie: string): ParsedCookie | undefined => {
   const validString = (s: any): s is string =>
-    typeof s === "string" && s.trim().length > 0;
+    typeof s === 'string' && s.trim().length > 0
 
-  const [identifier, ...rest] = cookie.split(`;`);
+  const [identifier, ...rest] = cookie.split(`;`)
   if (!validString(identifier)) {
-    return;
+    return
   }
-  const [name, value] = identifier.split(`=`);
+  const [name, value] = identifier.split(`=`)
   if (!validString(name) || !validString(value)) {
-    return;
+    return
   }
-  const parsedCookie: ParsedCookie = { name, value };
+  const parsedCookie: ParsedCookie = { name, value }
   rest.forEach((c) => {
-    const [name, ...rest] = c.split(`=`);
+    const [name, ...rest] = c.split(`=`)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!validString(name)) {
-      return;
+      return
     }
-    const value = rest.join(`=`).trim();
-    const property = name.toLowerCase().trim();
+    const value = rest.join(`=`).trim()
+    const property = name.toLowerCase().trim()
     switch (property) {
-      case "expires":
+      case 'expires':
         try {
-          const date = new Date(value);
-          if (date.toString() !== "Invalid Date") {
-            parsedCookie.expirationDate = date.getTime() / 1000;
+          const date = new Date(value)
+          if (date.toString() !== 'Invalid Date') {
+            parsedCookie.expirationDate = date.getTime() / 1000
           }
           // eslint-disable-next-line no-empty
         } catch {}
-        break;
-      case "max-age": {
+        break
+      case 'max-age': {
         // Max-Age takes presedence over Expires
         // see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#max-agenumber
-        const maxAge = Number(value);
+        const maxAge = Number(value)
         if (!isNaN(maxAge)) {
-          parsedCookie.expirationDate = Date.now() / 1000 + maxAge;
+          parsedCookie.expirationDate = Date.now() / 1000 + maxAge
         }
-        break;
+        break
       }
-      case "domain":
+      case 'domain':
         if (validString(value)) {
-          parsedCookie.domain = value;
+          parsedCookie.domain = value
         }
-        break;
-      case "path":
+        break
+      case 'path':
         if (validString(value)) {
-          parsedCookie.path = value;
+          parsedCookie.path = value
         }
-        break;
-      case "samesite":
+        break
+      case 'samesite':
         switch (value.toLowerCase()) {
-          case "strict":
-            parsedCookie.sameSite = "strict";
-            break;
-          case "lax":
-            parsedCookie.sameSite = "lax";
-            break;
-          case "none":
-            parsedCookie.sameSite = "no_restriction";
-            break;
+          case 'strict':
+            parsedCookie.sameSite = 'strict'
+            break
+          case 'lax':
+            parsedCookie.sameSite = 'lax'
+            break
+          case 'none':
+            parsedCookie.sameSite = 'no_restriction'
+            break
         }
-        break;
-      case "httponly":
-        parsedCookie.httpOnly = true;
-        break;
-      case "secure":
-        parsedCookie.secure = true;
-        break;
+        break
+      case 'httponly':
+        parsedCookie.httpOnly = true
+        break
+      case 'secure':
+        parsedCookie.secure = true
+        break
     }
-  });
-  return parsedCookie;
-};
+  })
+  return parsedCookie
+}
 
 interface ParsedCookie {
-  name: string;
-  value: string;
-  expirationDate?: number;
-  secure?: boolean;
-  httpOnly?: boolean;
-  path?: string;
-  sameSite?: browser.cookies.SameSiteStatus;
-  domain?: string;
+  name: string
+  value: string
+  expirationDate?: number
+  secure?: boolean
+  httpOnly?: boolean
+  path?: string
+  sameSite?: browser.cookies.SameSiteStatus
+  domain?: string
 }
 
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & {
-  [P in K]-?: NonNullable<T[P]>;
-};
+  [P in K]-?: NonNullable<T[P]>
+}
