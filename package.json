@@ -17,6 +17,7 @@
     "build:chrome": "cp chrome/manifest.json dist/chrome/ && cp -a chrome/icons dist/chrome && cd dist/ && zip -FSr chrome/chrome.zip chrome/",
     "prebuild:firefox": "rm -rf dist/firefox && tsc --project tsconfig.firefox.json",
     "build:firefox": "cp firefox/manifest.json dist/firefox/ && cp -a firefox/icons dist/firefox && cd dist/ && zip -FSr firefox/firefox.zip firefox/",
-    "prettier": "prettier --check '*.json' '**/*.ts'"
+    "prettier": "prettier --check '*.json' '**/*.ts'",
+    "prettier:write": "prettier --write '*.json' '**/*.ts'"
   }
 }

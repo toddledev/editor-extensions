@@ -1,39 +1,37 @@
 type SetCookiesArguments =
-  import("../../shared/setCookies.js").SetCookiesArguments;
-console.info("toddle extension loaded");
+  import('../../shared/setCookies.js').SetCookiesArguments
+console.info('toddle extension loaded')
 
-let setCookies: (args: SetCookiesArguments) => void | undefined;
+let setCookies: (args: SetCookiesArguments) => void | undefined
 const setup = async () => {
-  const { setCookies: _setCookies } = await import(
-    "../../shared/setCookies.js"
-  );
-  setCookies = _setCookies;
-};
-setup();
+  const { setCookies: _setCookies } = await import('../../shared/setCookies.js')
+  setCookies = _setCookies
+}
+setup()
 
 browser.webRequest.onBeforeSendHeaders.addListener(
   async (event) => {
     const domainCookies = await browser.cookies.getAll({
       url: event.url,
-    });
+    })
     if (event.parentFrameId === -1) {
       // This means we're not in an iframe
-      return {};
+      return {}
     }
     const requestHeaders = [
       ...(event.requestHeaders ?? []),
       {
-        name: "Cookie",
+        name: 'Cookie',
         value: domainCookies
-          .map((cookie) => cookie.name + "=" + cookie.value)
-          .join(" ;"),
+          .map((cookie) => cookie.name + '=' + cookie.value)
+          .join(' ;'),
       },
-    ];
-    return { requestHeaders };
+    ]
+    return { requestHeaders }
   },
-  { urls: ["https://*.toddle.site/*"], types: ["sub_frame"] },
-  ["blocking", "requestHeaders"],
-);
+  { urls: ['https://*.toddle.site/*'], types: ['sub_frame'] },
+  ['blocking', 'requestHeaders'],
+)
 
 browser.webRequest.onHeadersReceived.addListener(
   (info) => {
@@ -42,15 +40,15 @@ browser.webRequest.onHeadersReceived.addListener(
         responseHeaders: info.responseHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => browser.cookies.set(cookie),
-      });
+      })
     }
-    return undefined;
+    return undefined
   },
   {
     // In the manifest.json we have declared the host permissions to
     // *.toddle.site therefore, it's okay to use <all_urls> here
-    urls: ["<all_urls>"],
-    types: ["xmlhttprequest"],
+    urls: ['<all_urls>'],
+    types: ['xmlhttprequest'],
   },
-  ["responseHeaders"],
-);
+  ['responseHeaders'],
+)
