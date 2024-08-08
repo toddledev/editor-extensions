@@ -12,7 +12,7 @@ window.postMessage(
   '*',
 )
 
-browser.runtime.onMessage.addListener((message) => {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   window.postMessage(
     {
       sender: 'toddle-extension',
@@ -21,4 +21,6 @@ browser.runtime.onMessage.addListener((message) => {
     },
     '*',
   )
+  sendResponse();
+  return true;
 })

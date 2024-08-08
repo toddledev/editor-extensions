@@ -12,7 +12,7 @@ window.postMessage(
   '*',
 )
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   window.postMessage(
     {
       sender: 'toddle-extension',
@@ -21,5 +21,6 @@ chrome.runtime.onMessage.addListener((message) => {
     },
     '*',
   )
+  sendResponse();
   return true
 })
