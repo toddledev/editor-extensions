@@ -21,6 +21,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     },
     '*',
   )
-  sendResponse();
-  return true;
+  sendResponse()
+  return true
 })
