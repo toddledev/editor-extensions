@@ -44,15 +44,14 @@ browser.webRequest.onHeadersReceived.addListener(
           const tab = browser.tabs.query({
             active: true,
             lastFocusedWindow: true,
-          });
-        
-          tab.then(([t])=> {
+          })
+
+          tab.then(([t]) => {
             if (t && t.id) {
-              browser.tabs.sendMessage(t.id, {cookieName, cookieDomain})
+              browser.tabs.sendMessage(t.id, { cookieName, cookieDomain })
             }
           })
-        }
-          
+        },
       })
     }
     return undefined

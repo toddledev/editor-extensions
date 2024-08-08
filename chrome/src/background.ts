@@ -77,15 +77,14 @@ chrome.webRequest.onHeadersReceived.addListener(
           const tab = chrome.tabs.query({
             active: true,
             lastFocusedWindow: true,
-          });
-        
-          tab.then(([t])=> {
+          })
+
+          tab.then(([t]) => {
             if (t && t.id) {
-              chrome.tabs.sendMessage(t.id, {cookieName, cookieDomain})
+              chrome.tabs.sendMessage(t.id, { cookieName, cookieDomain })
             }
           })
-        }
-        
+        },
       })
     }
     return undefined
