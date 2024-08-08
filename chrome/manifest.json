@@ -19,7 +19,7 @@
     "declarativeNetRequest",
     "webRequest"
   ],
-  "host_permissions": ["https://*.toddle.site/*"],
+  "host_permissions": ["https://*.toddle.site/*", "https://*.toddle.dev/*"],
   "content_scripts": [
     {
       "matches": ["https://*.toddle.dev/*", "https://*.toddle.site/*"],

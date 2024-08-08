@@ -40,6 +40,19 @@ browser.webRequest.onHeadersReceived.addListener(
         responseHeaders: info.responseHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => browser.cookies.set(cookie),
+        notifyUser: (cookieName, cookieDomain) => {
+          const tab = browser.tabs.query({
+            active: true,
+            lastFocusedWindow: true,
+          });
+        
+          tab.then(([t])=> {
+            if (t && t.id) {
+              browser.tabs.sendMessage(t.id, {cookieName, cookieDomain})
+            }
+          })
+        }
+          
       })
     }
     return undefined
