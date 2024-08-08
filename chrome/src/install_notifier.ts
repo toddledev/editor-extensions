@@ -21,5 +21,5 @@ chrome.runtime.onMessage.addListener((message) => {
     },
     '*',
   )
-  return true;
+  return true
 })
