@@ -4,12 +4,14 @@ export interface SetCookiesArguments {
     | Array<chrome.webRequest.HttpHeaders[0]> // type hack
     | browser.webRequest.HttpHeaders
   setCookie: (cookie: ParsedCookie & { url: string }) => void
+  notifyUser: (cookie: Omit<ParsedCookie, 'value'> & { url: string }) => void
 }
 
 export function setCookies({
   requestUrl,
   responseHeaders,
   setCookie,
+  notifyUser,
 }: SetCookiesArguments) {
   const headers = new Headers(
     responseHeaders
@@ -56,6 +58,16 @@ export function setCookies({
       setCookie({
         name,
         value,
+        url,
+        secure,
+        httpOnly,
+        path,
+        sameSite,
+        expirationDate,
+        domain,
+      })
+      notifyUser({
+        name,
         url,
         secure,
         httpOnly,

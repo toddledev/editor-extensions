@@ -1,5 +1,26 @@
 let firefoxVersion = browser.runtime.getManifest().version
 
-var root = document.documentElement
-root.classList.add('toddleExtension')
-root.setAttribute('version', firefoxVersion)
+window.postMessage(
+  {
+    sender: 'toddle-extension',
+    message_name: 'info',
+    message: {
+      installed: true,
+      version: firefoxVersion,
+    },
+  },
+  '*',
+)
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  window.postMessage(
+    {
+      sender: 'toddle-extension',
+      message_name: 'cookie',
+      message,
+    },
+    '*',
+  )
+  sendResponse()
+  return true
+})
