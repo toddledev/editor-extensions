@@ -4,7 +4,7 @@ export interface SetCookiesArguments {
     | Array<chrome.webRequest.HttpHeaders[0]> // type hack
     | browser.webRequest.HttpHeaders
   setCookie: (cookie: ParsedCookie & { url: string }) => void
-  notifyUser: (cookieName: string, cookieDomain: string | undefined) => void
+  notifyUser: (cookie: Omit<ParsedCookie, 'value'> & { url: string } ) => void
 }
 
 export function setCookies({
@@ -66,7 +66,16 @@ export function setCookies({
         expirationDate,
         domain,
       })
-      notifyUser(name, domain)
+      notifyUser({
+        name,
+        url,
+        secure,
+        httpOnly,
+        path,
+        sameSite,
+        expirationDate,
+        domain,
+      })
     },
   )
 }
