@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "toddle",
-  "version": "2.0",
+  "version": "2.1",
   "description": "Browser extension for the toddle editor.",
   "background": {
     "scripts": ["firefox/src/background.js"]
