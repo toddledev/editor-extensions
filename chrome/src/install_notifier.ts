@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   window.postMessage(
     {
       sender: 'toddle-extension',
-      message_name: 'cookie',
+      message_name: 'cookies',
       message,
     },
     '*',

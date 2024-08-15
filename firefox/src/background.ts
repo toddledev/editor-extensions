@@ -18,6 +18,39 @@ browser.webRequest.onBeforeSendHeaders.addListener(
       // This means we're not in an iframe
       return {}
     }
+    const tab = browser.tabs.query({
+      active: true,
+      lastFocusedWindow: true,
+    })
+
+    const url = new URL(event.url)
+    const domain = url.host
+    let requestedUrl = url.origin
+
+    try {
+      if (typeof domain === 'string') {
+        const domainUrl = domain.startsWith('https://')
+          ? domain
+          : 'https://' + domain
+        const parsedUrl = new URL(domainUrl)
+        requestedUrl = parsedUrl.origin
+      }
+      // eslint-disable-next-line no-empty
+    } catch {}
+
+    // Don't return the value for the http cookies and include the requested url
+    const cookies = domainCookies.map((c) =>
+      c.httpOnly
+        ? { ...c, url: requestedUrl, value: undefined }
+        : { ...c, url: requestedUrl },
+    )
+
+    tab.then(([t]) => {
+      if (t && t.id) {
+        chrome.tabs.sendMessage(t.id, cookies)
+      }
+    })
+
     const requestHeaders = [
       ...(event.requestHeaders ?? []),
       {
@@ -40,7 +73,17 @@ browser.webRequest.onHeadersReceived.addListener(
         responseHeaders: info.responseHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => browser.cookies.set(cookie),
-        notifyUser: (cookie) => {
+        notifyUser: async (requestedUrl) => {
+          const url = new URL(info.url)
+          const domainCookies = await chrome.cookies.getAll({
+            domain: url.host,
+          })
+          // Don't return the value for the http cookies and include the requested url
+          const cookies = domainCookies.map((c) =>
+            c.httpOnly
+              ? { ...c, url: requestedUrl, value: undefined }
+              : { ...c, url: requestedUrl },
+          )
           const tab = browser.tabs.query({
             active: true,
             lastFocusedWindow: true,
@@ -48,7 +91,7 @@ browser.webRequest.onHeadersReceived.addListener(
 
           tab.then(([t]) => {
             if (t && t.id) {
-              browser.tabs.sendMessage(t.id, cookie)
+              browser.tabs.sendMessage(t.id, cookies)
             }
           })
         },
