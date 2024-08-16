@@ -32,8 +32,28 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 
     // Get the cookies for the .toddle.site domain
     const url = new URL(event.url)
+    const domain = url.host
     const domainCookies = await chrome.cookies.getAll({
-      domain: url.host,
+      domain,
+    })
+    const tab = chrome.tabs.query({
+      active: true,
+      lastFocusedWindow: true,
+    })
+
+    const requestedUrl = url.origin
+
+    // Don't return the value for the http cookies and include the requested url
+    const cookies = domainCookies.map((c) =>
+      c.httpOnly
+        ? { ...c, url: requestedUrl, value: undefined }
+        : { ...c, url: requestedUrl },
+    )
+
+    tab.then(([t]) => {
+      if (t && t.id) {
+        chrome.tabs.sendMessage(t.id, cookies)
+      }
     })
 
     if (domainCookies.length > 0) {
@@ -73,7 +93,19 @@ chrome.webRequest.onHeadersReceived.addListener(
         responseHeaders: info.responseHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => chrome.cookies.set(cookie),
-        notifyUser: (cookie) => {
+        notifyUser: async (requestedUrl) => {
+          const url = new URL(info.url)
+          const domainCookies = await chrome.cookies.getAll({
+            domain: url.host,
+          })
+
+          // Don't return the value for the http cookies and include the requested url
+          const cookies = domainCookies.map((c) =>
+            c.httpOnly
+              ? { ...c, url: requestedUrl, value: undefined }
+              : { ...c, url: requestedUrl },
+          )
+
           const tab = chrome.tabs.query({
             active: true,
             lastFocusedWindow: true,
@@ -81,7 +113,7 @@ chrome.webRequest.onHeadersReceived.addListener(
 
           tab.then(([t]) => {
             if (t && t.id) {
-              chrome.tabs.sendMessage(t.id, cookie)
+              chrome.tabs.sendMessage(t.id, cookies)
             }
           })
         },
