@@ -27,17 +27,6 @@ browser.webRequest.onBeforeSendHeaders.addListener(
     const domain = url.host
     let requestedUrl = url.origin
 
-    try {
-      if (typeof domain === 'string') {
-        const domainUrl = domain.startsWith('https://')
-          ? domain
-          : 'https://' + domain
-        const parsedUrl = new URL(domainUrl)
-        requestedUrl = parsedUrl.origin
-      }
-      // eslint-disable-next-line no-empty
-    } catch {}
-
     // Don't return the value for the http cookies and include the requested url
     const cookies = domainCookies.map((c) =>
       c.httpOnly

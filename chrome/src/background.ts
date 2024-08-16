@@ -41,18 +41,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(
       lastFocusedWindow: true,
     })
 
-    let requestedUrl = url.origin
-
-    try {
-      if (typeof domain === 'string') {
-        const domainUrl = domain.startsWith('https://')
-          ? domain
-          : 'https://' + domain
-        const parsedUrl = new URL(domainUrl)
-        requestedUrl = parsedUrl.origin
-      }
-      // eslint-disable-next-line no-empty
-    } catch {}
+    const requestedUrl = url.origin
 
     // Don't return the value for the http cookies and include the requested url
     const cookies = domainCookies.map((c) =>
@@ -70,8 +59,6 @@ chrome.webNavigation.onBeforeNavigate.addListener(
     if (domainCookies.length > 0) {
       const cookieValue =
         domainCookies.map((c) => `${c.name}=${c.value}`).join('; ') + ';'
-
-      console.log('cookieValue', cookieValue)
 
       await chrome.declarativeNetRequest.updateSessionRules({
         removeRuleIds: [RULE_ID],
