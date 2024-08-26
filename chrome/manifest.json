@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "toddle",
   "description": "Browser extension for the toddle editor.",
-  "version": "2.1",
+  "version": "2.2",
   "icons": {
     "32": "icons/toddle_32x32.png",
     "64": "icons/toddle_64x64.png",
@@ -19,7 +19,7 @@
     "declarativeNetRequest",
     "webRequest"
   ],
-  "host_permissions": ["https://*.toddle.site/*", "https://*.toddle.dev/*"],
+  "host_permissions": ["https://*.toddle.site/*"],
   "content_scripts": [
     {
       "matches": ["https://*.toddle.dev/*", "https://*.toddle.site/*"],
