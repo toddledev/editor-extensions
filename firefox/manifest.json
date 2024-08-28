@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "toddle",
-  "version": "2.1",
+  "version": "2.2",
   "description": "Browser extension for the toddle editor.",
   "background": {
     "scripts": ["firefox/src/background.js"]
@@ -13,7 +13,7 @@
   },
   "homepage_url": "https://toddle.dev",
   "permissions": ["cookies", "webRequest", "webRequestBlocking"],
-  "host_permissions": ["https://*.toddle.dev/*", "https://*.toddle.site/*"],
+  "host_permissions": ["https://*.toddle.site/*"],
   "content_scripts": [
     {
       "matches": ["https://*.toddle.dev/*", "https://*.toddle.site/*"],
