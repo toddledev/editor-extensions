@@ -86,6 +86,7 @@ browser.webRequest.onHeadersReceived.addListener(
         responseHeaders: info.responseHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => browser.cookies.set(cookie),
+        removeCookie: (cookie) => browser.cookies.remove(cookie),
         notifyUser,
       })
     }

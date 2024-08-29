@@ -4,6 +4,7 @@ export interface SetCookiesArguments {
     | Array<chrome.webRequest.HttpHeaders[0]> // type hack
     | browser.webRequest.HttpHeaders
   setCookie: (cookie: ParsedCookie & { url: string }) => void
+  removeCookie: (cookie: { name: string; url: string }) => void
   notifyUser: (requestedUrl: string) => void
 }
 
@@ -11,6 +12,7 @@ export function setCookies({
   requestUrl,
   responseHeaders,
   setCookie,
+  removeCookie,
   notifyUser,
 }: SetCookiesArguments) {
   const cookies = responseHeaders
@@ -50,17 +52,24 @@ export function setCookies({
         // eslint-disable-next-line no-empty
       } catch {}
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      setCookie({
-        name,
-        value,
-        url,
-        secure,
-        httpOnly,
-        path,
-        sameSite,
-        expirationDate,
-        domain,
-      })
+      if (value === '') {
+        removeCookie({
+          name,
+          url,
+        })
+      } else {
+        setCookie({
+          name,
+          value,
+          url,
+          secure,
+          httpOnly,
+          path,
+          sameSite,
+          expirationDate,
+          domain,
+        })
+      }
       try {
         notifyUser(url)
       } catch {}
@@ -83,7 +92,7 @@ const parseCookie = (cookie: string): ParsedCookie | undefined => {
     return
   }
   const [name, value] = identifier.split(`=`)
-  if (!validString(name) || !validString(value)) {
+  if (!validString(name) || typeof value !== 'string') {
     return
   }
   const parsedCookie: ParsedCookie = { name, value }
