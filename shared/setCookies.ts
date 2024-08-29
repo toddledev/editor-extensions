@@ -13,22 +13,17 @@ export function setCookies({
   setCookie,
   notifyUser,
 }: SetCookiesArguments) {
-  const headers = new Headers(
-    responseHeaders
-      .filter(
-        (
-          h,
-        ): h is RequireFields<
-          chrome.webRequest.HttpHeaders[0] | browser.webRequest.HttpHeaders[0],
-          'value'
-        > => typeof h.value === 'string',
-      )
-      .map((h) => [h.name, h.value] as [string, string]),
-  )
-  // We might have multiple Set-Cookie headers
-  const cookies = headers
-    .getSetCookie()
-    .map((c) => parseCookie(c))
+  const cookies = responseHeaders
+    // We only care about set-cookie headers
+    .filter(
+      (
+        h,
+      ): h is RequireFields<
+        chrome.webRequest.HttpHeaders[0] | browser.webRequest.HttpHeaders[0],
+        'value'
+      > => typeof h.value === 'string' && h.name.toLowerCase() === 'set-cookie',
+    )
+    .map((c) => parseCookie(c.value))
     .filter((c): c is ParsedCookie => !!c)
   cookies.forEach(
     ({
@@ -66,7 +61,9 @@ export function setCookies({
         expirationDate,
         domain,
       })
-      notifyUser(url)
+      try {
+        notifyUser(url)
+      } catch {}
     },
   )
 }

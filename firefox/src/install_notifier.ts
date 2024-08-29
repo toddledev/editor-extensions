@@ -1,5 +1,6 @@
 let firefoxVersion = browser.runtime.getManifest().version
 
+// Notify the editor that the extension is installed
 window.postMessage(
   {
     sender: 'toddle-extension',
