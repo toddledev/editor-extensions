@@ -3,12 +3,12 @@
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
-    "chrome-types": "0.1.270",
-    "@types/firefox-webext-browser": "120.0.1"
+    "chrome-types": "0.1.301",
+    "@types/firefox-webext-browser": "120.0.4"
   },
   "peerDependencies": {
-    "prettier": "3.2.5",
-    "typescript": "5.3.3"
+    "prettier": "3.3.3",
+    "typescript": "5.5.4"
   },
   "scripts": {
     "tsc": "tsc --project tsconfig.json --noEmit",
