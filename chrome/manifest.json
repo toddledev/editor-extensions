@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "toddle",
   "description": "Browser extension for the toddle editor.",
-  "version": "2.2",
+  "version": "2.3",
   "icons": {
     "32": "icons/toddle_32x32.png",
     "64": "icons/toddle_64x64.png",

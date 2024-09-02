@@ -93,6 +93,7 @@ chrome.webRequest.onHeadersReceived.addListener(
         responseHeaders: info.responseHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => chrome.cookies.set(cookie),
+        removeCookie: (cookie) => chrome.cookies.remove(cookie),
         notifyUser: async (requestedUrl) => {
           const url = new URL(info.url)
           const domainCookies = await chrome.cookies.getAll({
