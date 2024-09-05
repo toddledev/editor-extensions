@@ -82,8 +82,18 @@ browser.webRequest.onBeforeSendHeaders.addListener(
 browser.webRequest.onHeadersReceived.addListener(
   (info) => {
     if (info.responseHeaders) {
+      const setCookieHeader = info.responseHeaders.find(
+        (h) => h.name.toLowerCase() === 'set-cookie',
+      )
+      const setCookieHeaders = setCookieHeader?.value
+        // Firefox returns a string with all set-cookie cookies separated by newline \n
+        ?.split('\n')
+        .filter(Boolean)
+      if (!setCookieHeaders || setCookieHeaders.length === 0) {
+        return
+      }
       setCookies({
-        responseHeaders: info.responseHeaders,
+        setCookieHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => browser.cookies.set(cookie),
         removeCookie: (cookie) => browser.cookies.remove(cookie),

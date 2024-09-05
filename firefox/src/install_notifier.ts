@@ -1,4 +1,5 @@
 let firefoxVersion = browser.runtime.getManifest().version
+console.log('firefoxVersion', firefoxVersion)
 
 // Notify the editor that the extension is installed
 window.postMessage(
