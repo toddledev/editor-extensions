@@ -1,8 +1,6 @@
 export interface SetCookiesArguments {
   requestUrl: string
-  responseHeaders:
-    | Array<chrome.webRequest.HttpHeaders[0]> // type hack
-    | browser.webRequest.HttpHeaders
+  setCookieHeaders: string[]
   setCookie: (cookie: ParsedCookie & { url: string }) => void
   removeCookie: (cookie: { name: string; url: string }) => void
   notifyUser: (requestedUrl: string) => void
@@ -10,71 +8,61 @@ export interface SetCookiesArguments {
 
 export function setCookies({
   requestUrl,
-  responseHeaders,
+  setCookieHeaders,
   setCookie,
   removeCookie,
   notifyUser,
 }: SetCookiesArguments) {
-  const cookies = responseHeaders
-    // We only care about set-cookie headers
-    .filter(
-      (
-        h,
-      ): h is RequireFields<
-        chrome.webRequest.HttpHeaders[0] | browser.webRequest.HttpHeaders[0],
-        'value'
-      > => typeof h.value === 'string' && h.name.toLowerCase() === 'set-cookie',
-    )
-    .map((c) => parseCookie(c.value))
+  setCookieHeaders
+    .map((c) => parseCookie(c))
     .filter((c): c is ParsedCookie => !!c)
-  cookies.forEach(
-    ({
-      name,
-      value,
-      secure,
-      httpOnly,
-      path,
-      sameSite,
-      expirationDate,
-      domain,
-    }) => {
-      const requestedUrl = new URL(requestUrl)
-      let url = requestedUrl.origin
+    .forEach(
+      ({
+        name,
+        value,
+        secure,
+        httpOnly,
+        path,
+        sameSite,
+        expirationDate,
+        domain,
+      }) => {
+        const requestedUrl = new URL(requestUrl)
+        let url = requestedUrl.origin
 
-      try {
-        if (typeof domain === 'string') {
-          const domainUrl = domain.startsWith('https://')
-            ? domain
-            : 'https://' + domain
-          const parsedUrl = new URL(domainUrl)
-          url = parsedUrl.origin
+        try {
+          if (typeof domain === 'string') {
+            const domainUrl = domain.startsWith('https://')
+              ? domain
+              : 'https://' + domain
+            const parsedUrl = new URL(domainUrl)
+            url = parsedUrl.origin
+          }
+          // eslint-disable-next-line no-empty
+        } catch {}
+        if (value === '') {
+          removeCookie({
+            name,
+            url,
+          })
+        } else {
+          setCookie({
+            name,
+            value,
+            url,
+            secure,
+            httpOnly,
+            path,
+            sameSite,
+            expirationDate,
+            domain,
+          })
         }
-        // eslint-disable-next-line no-empty
-      } catch {}
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      if (value === '') {
-        removeCookie({
-          name,
-          url,
-        })
-      } else {
-        setCookie({
-          name,
-          value,
-          url,
-          secure,
-          httpOnly,
-          path,
-          sameSite,
-          expirationDate,
-          domain,
-        })
-      }
-      try {
-        notifyUser(url)
-      } catch {}
-    },
-  )
+        try {
+          notifyUser(url)
+        } catch {}
+      },
+    )
 }
 
 /**
@@ -98,7 +86,6 @@ const parseCookie = (cookie: string): ParsedCookie | undefined => {
   const parsedCookie: ParsedCookie = { name, value }
   rest.forEach((c) => {
     const [name, ...rest] = c.split(`=`)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!validString(name)) {
       return
     }

@@ -1,5 +1,6 @@
 // The .js extension is necessary for Chrome to pickup the import correctly
 import { setCookies } from '../../shared/setCookies.js'
+import type { RequireFields } from '../../shared/setCookies.js'
 
 console.log('toddle extension loaded')
 
@@ -89,8 +90,18 @@ chrome.webNavigation.onBeforeNavigate.addListener(
 chrome.webRequest.onHeadersReceived.addListener(
   (info) => {
     if (info.responseHeaders) {
+      const setCookieHeaders = info.responseHeaders
+        .filter(
+          (h): h is RequireFields<chrome.webRequest.HttpHeaders[0], 'value'> =>
+            h.name.toLowerCase() === 'set-cookie' &&
+            typeof h.value === 'string',
+        )
+        .map((h) => h.value)
+      if (setCookieHeaders.length === 0) {
+        return
+      }
       setCookies({
-        responseHeaders: info.responseHeaders,
+        setCookieHeaders,
         requestUrl: info.url,
         setCookie: (cookie) => chrome.cookies.set(cookie),
         removeCookie: (cookie) => chrome.cookies.remove(cookie),

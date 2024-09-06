@@ -12,7 +12,25 @@ The extension(s) are responsible for 3 things:
 2. Removing cookies in the iframe when (fetch) requests return `Set-Cookie` headers with an empty value for a cookie
 3. Copying cookies from the editor --> the iframe. This is useful when working with authenticated APIs where you're already logged in for instance.
 
-## Testing
+## Testing unpublished extensions
+
+### Chrome
+
+1. Build the Chrome extension using `bun run build:chrome`
+2. Open the "Extensions" page
+3. Click "Load unpacked"
+4. Select the `chrome/` folder in the `dist/` folder
+5. Click "Inspect views `service worker`" to see its output (`console.log`s, exceptions etc.)
+
+### Firefox
+
+1. Build the Firefox extension using `bun run build:firefox`
+2. Open `about:debugging#/runtime/this-firefox` in Firefox
+3. Click "Load Temporary Add-on"
+4. Select the manifest from the `dist/` folder
+5. Click "Inspect" on the installed extension to see its output (`console.log`s, exceptions etc.)
+
+## Testing extension functionality
 
 To test the different aspects of the extensions, it's recommended to:
 
