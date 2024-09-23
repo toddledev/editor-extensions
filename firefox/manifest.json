@@ -7,9 +7,8 @@
     "scripts": ["firefox/src/background.js"]
   },
   "icons": {
-    "32": "icons/icon-32x32.png",
-    "64": "icons/icon-64x64.png",
-    "128": "icons/icon-128x128.png"
+    "48": "icons/icon-48x48.png",
+    "96": "icons/icon-96x96.png"
   },
   "homepage_url": "https://toddle.dev",
   "permissions": ["cookies", "webRequest", "webRequestBlocking"],
@@ -20,5 +19,11 @@
       "js": ["firefox/src/install_notifier.js"],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{b369ea25-4d25-4ecb-81dd-b09da203176a}",
+      "strict_min_version": "109.0"
+    }
+  }
 }
