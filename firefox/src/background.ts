@@ -103,9 +103,9 @@ browser.webRequest.onHeadersReceived.addListener(
     return undefined
   },
   {
-    // In the manifest.json we have declared the host permissions to
-    // *.toddle.site therefore, it's okay to use <all_urls> here
-    urls: ['<all_urls>'],
+    // We need to specify the allowed url here because it looks like
+    // it's not picking it up from the host permissions in manifest
+    urls: ['https://*.toddle.site/*'],
     types: ['xmlhttprequest'],
   },
   ['responseHeaders'],
