@@ -24,7 +24,7 @@
     {
       "matches": ["https://*.toddle.dev/*", "https://*.toddle.site/*"],
       "js": ["chrome/src/install_notifier.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ]
 }
