@@ -1,8 +1,8 @@
 export interface SetCookiesArguments {
   requestUrl: string
   setCookieHeaders: string[]
-  setCookie: (cookie: ParsedCookie & { url: string }) => void
-  removeCookie: (cookie: { name: string; url: string }) => void
+  setCookie: (cookie: ParsedCookie & { url: string }, domain?: string) => void
+  removeCookie: (cookie: { name: string; url: string }, domain?: string) => void
   notifyUser: (requestedUrl: string) => void
 }
 
@@ -41,22 +41,28 @@ export function setCookies({
           // eslint-disable-next-line no-empty
         } catch {}
         if (value === '') {
-          removeCookie({
-            name,
-            url,
-          })
-        } else {
-          setCookie({
-            name,
-            value,
-            url,
-            secure,
-            httpOnly,
-            path,
-            sameSite,
-            expirationDate,
+          removeCookie(
+            {
+              name,
+              url,
+            },
             domain,
-          })
+          )
+        } else {
+          setCookie(
+            {
+              name,
+              value,
+              url,
+              secure,
+              httpOnly,
+              path,
+              sameSite,
+              expirationDate,
+              domain,
+            },
+            domain,
+          )
         }
         try {
           notifyUser(url)

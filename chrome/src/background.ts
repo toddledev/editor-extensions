@@ -1,6 +1,7 @@
 // The .js extension is necessary for Chrome to pickup the import correctly
 import { setCookies } from '../../shared/setCookies.js'
 import type { RequireFields } from '../../shared/setCookies.js'
+import { updateSessionRules } from './helpers.js'
 
 console.log('toddle extension loaded')
 
@@ -58,28 +59,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(
     })
 
     if (domainCookies.length > 0) {
-      const cookieValue =
-        domainCookies.map((c) => `${c.name}=${c.value}`).join('; ') + ';'
-
-      await chrome.declarativeNetRequest.updateSessionRules({
-        removeRuleIds: [RULE_ID],
-        addRules: [
-          {
-            id: RULE_ID,
-            condition: {},
-            action: {
-              type: 'modifyHeaders',
-              requestHeaders: [
-                {
-                  header: 'Cookie',
-                  operation: 'set',
-                  value: cookieValue,
-                },
-              ],
-            },
-          },
-        ],
-      })
+      await updateSessionRules({ domainCookies, RULE_ID })
     }
   },
   {
@@ -103,8 +83,32 @@ chrome.webRequest.onHeadersReceived.addListener(
       setCookies({
         setCookieHeaders,
         requestUrl: info.url,
-        setCookie: (cookie) => chrome.cookies.set(cookie),
-        removeCookie: (cookie) => chrome.cookies.remove(cookie),
+        setCookie: async (cookie, domain) => {
+          await chrome.cookies.set(cookie)
+
+          const domainCookies = await chrome.cookies.getAll({
+            domain,
+          })
+
+          if (domainCookies.length > 0) {
+            await updateSessionRules({ domainCookies, RULE_ID })
+          }
+        },
+        removeCookie: async (cookie, domain) => {
+          await chrome.cookies.remove(cookie)
+
+          const domainCookies = await chrome.cookies.getAll({
+            domain,
+          })
+
+          if (domainCookies.length > 0) {
+            await updateSessionRules({ domainCookies, RULE_ID })
+          } else {
+            await chrome.declarativeNetRequest.updateSessionRules({
+              removeRuleIds: [RULE_ID],
+            })
+          }
+        },
         notifyUser: async (requestedUrl) => {
           const url = new URL(info.url)
           const domainCookies = await chrome.cookies.getAll({
